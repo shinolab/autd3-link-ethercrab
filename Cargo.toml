@@ -1,6 +1,6 @@
 [package]
 name = "autd3-link-ethercrab"
-version = "0.1.0"
+version = "27.0.0"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2021"
 
@@ -12,7 +12,7 @@ keywords = ["autd"]
 
 [dependencies]
 async-channel = "2.3.1"
-autd3-driver = "25.3.2"
+autd3-driver = "27.0.0"
 ethercrab = "0.4.2"
 serde = { version = "1.0.203", optional = true }
 ta = "0.5.0"
@@ -27,10 +27,11 @@ libc = { version = "0.2.144" }
 
 [dev-dependencies]
 anyhow = "1.0.86"
-autd3 = "25.3.2"
+autd3 = "27.0.0"
 tokio = { version = "1.38.0", features = ["full"] }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 
 [features]
 serde = ["dep:serde"]
+async-trait = ["autd3-driver/async-trait"]

@@ -14,9 +14,7 @@ pub enum EtherCrabError {
     #[error("{0}")]
     IoError(#[from] std::io::Error),
     #[error("{0}")]
-    EtherCrabError(#[from] ethercrab::error::Error),
-    #[error("{0}")]
-    RecvError(#[from] tokio::sync::oneshot::error::RecvError),
+    EtherCrab(#[from] ethercrab::error::Error),
     #[error("Number of devices specified ({0}) does not match the number found ({1})")]
     DeviceNumberMismatch(usize, usize),
     #[error("Failed to synchronize devices (Max deviation: {0:?})")]

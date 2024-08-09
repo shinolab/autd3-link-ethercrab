@@ -47,25 +47,35 @@ static PDU_STORAGE: PduStorage<MAX_FRAMES, MAX_PDU_DATA> = PduStorage::new();
 
 #[derive(Builder)]
 pub struct EtherCrabBuilder {
-    #[getset]
+    #[get]
+    #[set]
     buf_size: usize,
-    #[getset]
+    #[get]
+    #[set]
     timer_strategy: TimerStrategy,
-    #[getset]
+    #[get]
+    #[set]
     timeout: std::time::Duration,
-    #[getset]
+    #[get]
+    #[set]
     interface: String,
-    #[getset]
+    #[get]
+    #[set]
     ec_timeouts: Timeouts,
-    #[getset]
+    #[get]
+    #[set]
     ec_client_config: ClientConfig,
-    #[getset]
+    #[get]
+    #[set]
     dc_config: DcConfiguration,
-    #[getset]
+    #[get]
+    #[set]
     interval: Duration,
-    #[getset]
+    #[get]
+    #[set]
     pub(crate) sync_tolerance: Duration,
-    #[getset]
+    #[get]
+    #[set]
     pub(crate) sync_timeout: Duration,
 }
 
@@ -349,14 +359,6 @@ impl EtherCrab {
             sync_timeout: Duration::from_secs(10),
             buf_size: 32,
             timer_strategy: TimerStrategy::Sleep,
-        }
-    }
-}
-
-impl Drop for EtherCrab {
-    fn drop(&mut self) {
-        if self.is_open() {
-            let _ = self.close();
         }
     }
 }
