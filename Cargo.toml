@@ -1,6 +1,6 @@
 [package]
 name = "autd3-link-ethercrab"
-version = "27.0.0"
+version = "28.0.0"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2021"
 
@@ -12,23 +12,23 @@ keywords = ["autd"]
 
 [dependencies]
 async-channel = "2.3.1"
-autd3-driver = "27.0.0"
-ethercrab = "0.4.2"
-serde = { version = "1.0.203", optional = true }
+autd3-driver = "28.0.0"
+ethercrab = "0.5.0"
+serde = { version = "1.0.210", optional = true }
 ta = "0.5.0"
 thiserror = "1.0.61"
-tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
+tokio = { version = "1.40.0", features = ["rt-multi-thread"] }
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.57.0", features = ["Win32_Media_Multimedia", "Win32_System_Threading", "Win32_Foundation"] }
+windows = { version = "0.58.0", features = ["Win32_Media_Multimedia", "Win32_System_Threading", "Win32_Foundation"] }
 
 [target.'cfg(not(windows))'.dependencies]
 libc = { version = "0.2.144" }
 
 [dev-dependencies]
 anyhow = "1.0.86"
-autd3 = "27.0.0"
-tokio = { version = "1.38.0", features = ["full"] }
+autd3 = "28.0.0"
+tokio = { version = "1.40.0", features = ["full"] }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 

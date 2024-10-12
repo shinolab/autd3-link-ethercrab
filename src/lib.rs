@@ -10,23 +10,24 @@ use std::{
 use autd3_driver::{
     derive::*,
     ethercat::{EC_INPUT_FRAME_SIZE, EC_OUTPUT_FRAME_SIZE},
-    firmware::cpu::{RxMessage, TxDatagram},
+    firmware::cpu::{RxMessage, TxDatagram, TxMessage},
     link::{Link, LinkBuilder},
 };
 use error::EtherCrabError;
 
 use async_channel::{bounded, SendError, Sender};
 use ethercrab::{
-    slave_group::CycleInfo,
     std::{ethercat_now, tx_rx_task},
-    Client, DcSync, PduStorage, RegisterAddress,
+    subdevice_group::CycleInfo,
+    DcSync, MainDevice, PduStorage, RegisterAddress,
 };
 use sleep::{BusyWait, Sleep, StdSleep};
 use ta::{indicators::ExponentialMovingAverage, Next};
 use tokio::{task::JoinHandle, time::Instant};
 
-pub use ethercrab::{slave_group::DcConfiguration, ClientConfig, Timeouts};
 pub use timer_strategy::TimerStrategy;
+
+pub use ethercrab::{subdevice_group::DcConfiguration, MainDeviceConfig, Timeouts};
 
 pub struct EtherCrab {
     is_open: Arc<AtomicBool>,
@@ -56,15 +57,15 @@ pub struct EtherCrabBuilder {
     #[get]
     #[set]
     timeout: std::time::Duration,
-    #[get]
-    #[set]
+    #[get(ref)]
+    #[set(into)]
     interface: String,
     #[get]
     #[set]
     ec_timeouts: Timeouts,
     #[get]
     #[set]
-    ec_client_config: ClientConfig,
+    ec_client_config: MainDeviceConfig,
     #[get]
     #[set]
     dc_config: DcConfiguration,
@@ -98,7 +99,7 @@ impl EtherCrabBuilder {
             .try_split()
             .map_err(|_| EtherCrabError::PduStorageError)?;
 
-        let client = Arc::new(Client::new(pdu_loop, ec_timeouts, ec_client_config));
+        let client = Arc::new(MainDevice::new(pdu_loop, ec_timeouts, ec_client_config));
 
         let rx_tx_task = tokio::spawn(tx_rx_task(&interface, tx, rx)?);
 
@@ -239,7 +240,13 @@ impl EtherCrabBuilder {
                                 .enumerate()
                                 .for_each(|(idx, mut slave)| {
                                     let o = slave.outputs_raw_mut();
-                                    o.copy_from_slice(tx.data(idx));
+                                    unsafe {
+                                        std::ptr::copy_nonoverlapping(
+                                            tx.as_ptr().add(idx) as *const _,
+                                            o.as_mut_ptr(),
+                                            std::mem::size_of::<TxMessage>(),
+                                        );
+                                    }
                                 });
                         }
 
@@ -345,9 +352,9 @@ impl EtherCrab {
                 pdu: Duration::from_millis(2000),
                 ..Timeouts::default()
             },
-            ec_client_config: ClientConfig {
+            ec_client_config: MainDeviceConfig {
                 dc_static_sync_iterations: 10_000,
-                ..ClientConfig::default()
+                ..MainDeviceConfig::default()
             },
             dc_config: DcConfiguration {
                 start_delay: Duration::from_millis(100),
