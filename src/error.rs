@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use autd3_core::link::{LinkError, TxMessage};
+use autd3_core::link::LinkError;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -19,8 +19,6 @@ pub enum EtherCrabError {
     DeviceNumberMismatch(usize, usize),
     #[error("Failed to synchronize devices (Max deviation: {0:?})")]
     SyncTimeout(Duration),
-    #[error("{0}")]
-    SendError(#[from] async_channel::SendError<Vec<TxMessage>>),
 }
 
 impl From<EtherCrabError> for LinkError {

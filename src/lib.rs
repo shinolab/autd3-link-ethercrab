@@ -36,7 +36,10 @@ static PDU_STORAGE: PduStorage<MAX_FRAMES, MAX_PDU_DATA> = PduStorage::new();
 
 struct EtherCrabInner {
     is_open: Arc<AtomicBool>,
+    #[cfg(target_os = "windows")]
     tx_rx_task: Option<std::thread::JoinHandle<Result<(), std::io::Error>>>,
+    #[cfg(not(target_os = "windows"))]
+    tx_rx_task: Option<JoinHandle<Result<(), ethercrab::error::Error>>>,
     task: Option<JoinHandle<Result<(), ethercrab::error::Error>>>,
     sender: Sender<Vec<TxMessage>>,
     interval: Duration,
@@ -72,8 +75,7 @@ impl EtherCrabInner {
             move || ethercrab::std::tx_rx_task_blocking(&interface, tx, rx)
         });
         #[cfg(not(target_os = "windows"))]
-        smol::spawn(ethercrab::std::tx_rx_task(&interface, tx, rx).expect("spawn TX/RX task"))
-            .detach();
+        let tx_rx_task = tokio::spawn(ethercrab::std::tx_rx_task(&interface, tx, rx)?);
 
         tokio::time::sleep(Duration::from_millis(200)).await;
 
@@ -261,14 +263,20 @@ impl EtherCrabInner {
         }
 
         if let Some(tx_rx_task) = self.tx_rx_task.take() {
+            #[cfg(target_os = "windows")]
             let _ = tx_rx_task.join().expect("Join TX/RX task");
+            #[cfg(not(target_os = "windows"))]
+            tx_rx_task.abort();
         }
 
         Ok(())
     }
 
-    async fn send(&mut self, tx: &[TxMessage]) -> Result<(), EtherCrabError> {
-        self.sender.send(tx.to_vec()).await?;
+    async fn send(&mut self, tx: &[TxMessage]) -> Result<(), LinkError> {
+        self.sender
+            .send(tx.to_vec())
+            .await
+            .map_err(|_| LinkError::new("channel closed".to_owned()))?;
         Ok(())
     }
 
