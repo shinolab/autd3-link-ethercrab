@@ -1,6 +1,6 @@
 [package]
 name = "autd3-link-ethercrab"
-version = "28.0.0"
+version = "29.0.0"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2021"
 
@@ -11,27 +11,29 @@ readme = "README.md"
 keywords = ["autd"]
 
 [dependencies]
-async-channel = "2.3.1"
-autd3-driver = "28.0.0"
-ethercrab = "0.5.0"
-serde = { version = "1.0.210", optional = true }
-ta = "0.5.0"
-thiserror = "1.0.61"
-tokio = { version = "1.40.0", features = ["rt-multi-thread"] }
+async-channel = { version = "2.3.1", default-features = false }
+autd3-core = { version = "29.0.0", default-features = false, features = ["link", "async"] }
+ethercrab = { version = "0.5.3", default-features = false, features = ["std"] }
+serde = { version = "1.0.217", default-features = false, optional = true }
+ta = { version = "0.5.0", default-features = false }
+thiserror = { version = "2.0.11", default-features = false }
+tokio = { version = "1.41.0", default-features = false, features = ["rt-multi-thread", "time"] }
+tracing = { version = "0.1.41", default-features = false }
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.58.0", features = ["Win32_Media_Multimedia", "Win32_System_Threading", "Win32_Foundation"] }
+windows = { version = "0.59.0", default-features = false, features = ["Win32_Media_Multimedia", "Win32_System_Threading", "Win32_Foundation"] }
 
 [target.'cfg(not(windows))'.dependencies]
-libc = { version = "0.2.144" }
+libc = { version = "0.2.169", default-features = false }
 
 [dev-dependencies]
-anyhow = "1.0.86"
-autd3 = "28.0.0"
-tokio = { version = "1.40.0", features = ["full"] }
-tracing = "0.1.40"
-tracing-subscriber = "0.3.18"
+anyhow = { version = "1.0.95", default-features = false }
+autd3 = { version = "29.0.0", default-features = false, features = ["async"] }
+pnet_datalink = { version = "0.35.0", default-features = false, features = ["std"] }
+tokio = { version = "1.43.0", default-features = false, features = ["macros"] }
+tracing-subscriber = { version = "0.3.19", default-features = false, features = ["fmt"] }
 
 [features]
 serde = ["dep:serde"]
-async-trait = ["autd3-driver/async-trait"]
+blocking = []
+async-trait = ["autd3-core/async-trait"]
