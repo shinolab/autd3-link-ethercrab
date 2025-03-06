@@ -1,6 +1,6 @@
 [package]
 name = "autd3-link-ethercrab"
-version = "30.0.0"
+version = "31.0.0"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2024"
 
@@ -12,23 +12,23 @@ keywords = ["autd"]
 
 [dependencies]
 async-channel = { version = "2.3.1", default-features = false }
-autd3-core = { version = "30.0.0", default-features = false, features = ["link", "async"] }
+autd3-core = { version = "31.0.0", default-features = false, features = ["link", "async"] }
 ethercrab = { version = "0.5.3", default-features = false, features = ["std"] }
 serde = { version = "1.0.218", default-features = false, optional = true }
 ta = { version = "0.5.0", default-features = false }
-thiserror = { version = "2.0.11", default-features = false }
-tokio = { version = "1.41.0", default-features = false, features = ["rt-multi-thread", "time"] }
+thiserror = { version = "2.0.12", default-features = false }
+tokio = { version = "1.43.0", default-features = false, features = ["rt-multi-thread", "time"] }
 tracing = { version = "0.1.41", default-features = false }
 
 [target.'cfg(windows)'.dependencies]
-windows = { version = "0.59.0", default-features = false, features = ["Win32_Media_Multimedia", "Win32_System_Threading", "Win32_Foundation"] }
+windows = { version = "0.60.0", default-features = false, features = ["Win32_Media_Multimedia", "Win32_System_Threading", "Win32_Foundation"] }
 
 [target.'cfg(not(windows))'.dependencies]
-libc = { version = "0.2.169", default-features = false }
+libc = { version = "0.2.170", default-features = false }
 
 [dev-dependencies]
-anyhow = { version = "1.0.96", default-features = false }
-autd3 = { version = "30.0.0", default-features = false, features = ["async"] }
+anyhow = { version = "1.0.97", default-features = false }
+autd3 = { version = "31.0.0", default-features = false, features = ["async"] }
 pnet_datalink = { version = "0.35.0", default-features = false, features = ["std"] }
 tokio = { version = "1.43.0", default-features = false, features = ["macros"] }
 tracing-subscriber = { version = "0.3.19", default-features = false, features = ["fmt"] }
